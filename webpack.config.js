@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
 
@@ -31,6 +32,32 @@ const devServer = () => {
   }
 }
 
+const optimization = () => {
+  const config = {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          name: "vendors",
+          test: /node_modules/,
+          chunks: "all",
+          enforce: true
+        }
+      }
+    }
+  }
+
+  if (isProd) {
+
+    config.minimize = true;
+
+    config.minimizer = [
+      new TerserPlugin()
+    ]
+  }
+
+  return config;
+};
+
 module.exports = {
   externals: {
     paths: PATHS
@@ -42,20 +69,9 @@ module.exports = {
     filename: "js/[name].[hash].js",
     path: PATHS.dist
   },
-  devtool: isDev ? "cheap-module-eval-source-map" : null,
+  devtool: isDev ? "cheap-module-eval-source-map" : false,
   devServer: isDev ? devServer() : {},
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          name: "vendors",
-          test: /node_modules/,
-          chunks: "all",
-          enforce: true
-        }
-      }
-    }
-  },
+  optimization: optimization(),
   module: {
     rules: [
       {

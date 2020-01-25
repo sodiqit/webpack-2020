@@ -13,7 +13,7 @@ node_modules/
 materials/
 
 # Папка с собранными файлами проекта
-build/
+public/
 
 # Public bundle
 public/bundle.js

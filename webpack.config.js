@@ -5,6 +5,9 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 
+const isDev = process.env.NODE_ENV === "development";
+const isProd = !isDev;
+
 const PATHS = {
   src: path.join(__dirname, "./src"),
   dist: path.join(__dirname, "./public"),
@@ -15,6 +18,20 @@ const PAGES = fs
   .readdirSync(PATHS.src)
   .filter(fileName => fileName.endsWith(".html"));
 
+const devServer = () => {
+  return {
+    contentBase: path.join(__dirname, `public`),
+    host: `192.168.0.105`,
+    port: 8082,
+    hot: true,
+    compress: false,
+    overlay: {
+      warnings: true,
+      errors: true
+    }
+  }
+}
+
 module.exports = {
   externals: {
     paths: PATHS
@@ -23,9 +40,11 @@ module.exports = {
     app: PATHS.src
   },
   output: {
-    filename: `js/[name].[contenthash].js`,
+    filename: "js/[name].[contenthash].js",
     path: PATHS.dist
   },
+  devtool: isDev ? "cheap-module-eval-source-map" : null,
+  devServer: isDev ? devServer() : {},
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -70,7 +89,13 @@ module.exports = {
         // less
         test: /\.less$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: true,
+              reloadAll: true
+            }
+          },
           {
             loader: "css-loader",
             options: { sourceMap: true }
@@ -94,11 +119,11 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: `css/[name].[contenthash].css`
+      filename: "css/[name].[contenthash].css"
     }),
     new CopyWebpackPlugin([
-      { from: `${PATHS.src}/img`, to: `img` },
-      { from: `${PATHS.src}/fonts`, to: `fonts`}
+      { from: `${PATHS.src}/img`, to: "img" },
+      { from: `${PATHS.src}/fonts`, to: "fonts"}
     ]),
 
     ...PAGES.map(

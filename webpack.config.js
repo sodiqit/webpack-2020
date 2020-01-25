@@ -8,11 +8,11 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
+const fileName = ext => isDev ? `[name].${ext}` : `[name].[hash].${ext}`
 
 const PATHS = {
   src: path.join(__dirname, "./src"),
-  dist: path.join(__dirname, "./public"),
-  assets: "assets"
+  dist: path.join(__dirname, "./public")
 };
 
 const PAGES = fs
@@ -66,7 +66,7 @@ module.exports = {
     app: PATHS.src
   },
   output: {
-    filename: "js/[name].[hash].js",
+    filename: `js/${fileName("js")}`,
     path: PATHS.dist
   },
   devtool: isDev ? "cheap-module-eval-source-map" : false,
@@ -107,18 +107,18 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              hmr: true,
+              hmr: isDev,
               reloadAll: true
             }
           },
           {
             loader: "css-loader",
-            options: { sourceMap: true }
+            // options: { sourceMap: isDev }
           },
           {
             loader: "postcss-loader",
             options: {
-              sourceMap: true,
+              // sourceMap: isDev,
               config: { path: `./postcss.config.js` }
             }
           },
@@ -134,7 +134,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "css/[name].[hash].css"
+      filename: `css/${fileName("css")}`
     }),
     new CopyWebpackPlugin([
       { from: `${PATHS.src}/img`, to: "img" },
@@ -152,3 +152,12 @@ module.exports = {
     new CleanWebpackPlugin()
   ]
 };
+
+/*TODO: 
+
+  Add imagemin webpack,
+  convert to webp plugin,
+  check soursemaps,
+  add pug in bundle
+
+*/

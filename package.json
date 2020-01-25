@@ -4,8 +4,9 @@
   "description": "My webpack build",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --open --config ./webpack.dev.conf.js",
-    "build": "webpack --config ./webpack.build.conf.js"
+    "start": "cross-env NODE_ENV=development webpack-dev-server --mode development --open",
+    "dev": "cross-env NODE_ENV=development webpack --mode development",
+    "build": "cross-env NODE_ENV=production webpack --mode production"
   },
   "browserslist": [
     "> 1%",
@@ -29,6 +30,7 @@
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
+    "cross-env": "^6.0.3",
     "css-loader": "^3.4.0",
     "cssnano": "^4.1.10",
     "file-loader": "^5.0.2",
@@ -37,6 +39,7 @@
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.9.0",
     "postcss-loader": "^3.0.0",
+    "terser-webpack-plugin": "^2.3.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"

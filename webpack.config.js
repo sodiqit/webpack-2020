@@ -3,8 +3,8 @@ const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
 
@@ -23,7 +23,6 @@ const devServer = () => {
     contentBase: path.join(__dirname, `public`),
     host: `192.168.0.105`,
     port: 8082,
-    hot: true,
     compress: false,
     overlay: {
       warnings: true,
@@ -40,7 +39,7 @@ module.exports = {
     app: PATHS.src
   },
   output: {
-    filename: "js/[name].[contenthash].js",
+    filename: "js/[name].[hash].js",
     path: PATHS.dist
   },
   devtool: isDev ? "cheap-module-eval-source-map" : null,
@@ -119,7 +118,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "css/[name].[contenthash].css"
+      filename: "css/[name].[hash].css"
     }),
     new CopyWebpackPlugin([
       { from: `${PATHS.src}/img`, to: "img" },

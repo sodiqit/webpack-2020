@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const ImageminWebpWebpackPlugin= require("imagemin-webp-webpack-plugin");
+const ImageminPlugin = require('imagemin-webpack-plugin').default
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
@@ -59,6 +60,55 @@ const optimization = () => {
   return config;
 };
 
+const plugins = () => {
+
+  const pluginConf = [
+    new CleanWebpackPlugin(),
+
+    new MiniCssExtractPlugin({
+      filename: `css/${fileName("css")}`
+    }),
+
+    new CopyWebpackPlugin([
+      { from: `${PATHS.src}/img`, to: "img" },
+      { from: `${PATHS.src}/fonts`, to: "fonts"}
+    ]),
+
+    ...PAGES.map(
+      page =>
+        new HtmlWebpackPlugin({
+          template: `${PATHS.src}/${page}`,
+          filename: `./${page}`
+        })
+    ),
+  ]
+
+  if (isProd) {
+    pluginConf.push(new ImageminWebpWebpackPlugin({
+      config: [{
+        test: /\.(jpe?g|png)/,
+        options: {
+          quality:  75
+        }
+      }],
+      overrideExtension: true,
+      detailedLogs: false,
+      silent: false,
+      strict: true
+    }));
+
+    pluginConf.push(new ImageminPlugin({ 
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      optipng: { optimizationLevel: 3 },
+      gifsicle: { optimizationLevel: 1 },
+      jpegtran: { progressive: true },
+      svgo: {} 
+    }));
+  }
+
+  return pluginConf;
+};
+
 module.exports = {
   externals: {
     paths: PATHS
@@ -93,13 +143,18 @@ module.exports = {
       },
       {
         // images / icons
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]",
-          publicPath: "./../img",
-          outputPath: "./img"
-        }
+        test: /\.(png|jpg|gif|svg|webp)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: "[name].[ext]",
+              publicPath: "./../img",
+              outputPath: "./img"
+            }
+          }
+        ],
+        
       },
       {
         // less
@@ -133,40 +188,7 @@ module.exports = {
       "~": PATHS.src
     }
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: `css/${fileName("css")}`
-    }),
-
-    
-
-    new CopyWebpackPlugin([
-      { from: `${PATHS.src}/img`, to: "img" },
-      { from: `${PATHS.src}/fonts`, to: "fonts"}
-    ]),
-
-    ...PAGES.map(
-      page =>
-        new HtmlWebpackPlugin({
-          template: `${PATHS.src}/${page}`,
-          filename: `./${page}`
-        })
-    ),
-
-    new ImageminWebpWebpackPlugin({
-      config: [{
-        test: /\.(jpe?g|png)/,
-        options: {
-          quality:  75
-        }
-      }],
-      overrideExtension: true,
-      detailedLogs: false,
-      silent: false,
-      strict: true
-    }),
-  ]
+  plugins: plugins()
 };
 
 /*TODO: 

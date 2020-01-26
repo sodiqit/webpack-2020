@@ -102,6 +102,7 @@ const plugins = () => {
       optipng: { optimizationLevel: 3 },
       gifsicle: { optimizationLevel: 1 },
       jpegtran: { progressive: true },
+      pngquant: { quality: "60-70" },
       svgo: {} 
     }));
   }
@@ -193,8 +194,6 @@ module.exports = {
 
 /*TODO: 
 
-  Add imagemin webpack,
-  convert to webp plugin,
   check soursemaps,
   add pug in bundle
 

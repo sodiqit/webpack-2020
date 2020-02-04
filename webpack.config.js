@@ -17,9 +17,10 @@ const PATHS = {
   dist: path.join(__dirname, "./public")
 };
 
+const PAGES_DIR = `${PATHS.src}/pug/pages/`
 const PAGES = fs
-  .readdirSync(PATHS.src)
-  .filter(fileName => fileName.endsWith(".html"));
+  .readdirSync(PAGES_DIR)
+  .filter(fileName => fileName.endsWith(".pug"));
 
 const devServer = () => {
   return {
@@ -77,8 +78,8 @@ const plugins = () => {
     ...PAGES.map(
       page =>
         new HtmlWebpackPlugin({
-          template: `${PATHS.src}/${page}`,
-          filename: `./${page}`
+          template: `${PAGES_DIR}/${page}`,
+          filename: `./${page.replace(/\.pug/,'.html')}`
         })
     ),
   ]
@@ -123,6 +124,10 @@ module.exports = {
   optimization: optimization(),
   module: {
     rules: [
+      {
+        test: /\.pug$/,
+        loader: "pug-loader"
+      },
       {
         // JavaScript
         test: /\.js$/,

@@ -102,7 +102,7 @@ const plugins = () => {
       optipng: { optimizationLevel: 3 },
       gifsicle: { optimizationLevel: 1 },
       jpegtran: { progressive: true },
-      pngquant: { quality: "60-70" },
+      pngquant: { quality: "70-75" },
       svgo: {} 
     }));
   }
@@ -111,9 +111,6 @@ const plugins = () => {
 };
 
 module.exports = {
-  externals: {
-    paths: PATHS
-  },
   entry: {
     app: PATHS.src
   },
@@ -121,7 +118,7 @@ module.exports = {
     filename: `js/${fileName("js")}`,
     path: PATHS.dist
   },
-  devtool: isDev ? "cheap-module-eval-source-map" : false,
+  devtool: isDev ? "source-map" : false, //"cheap-module-eval-source-map" - not working
   devServer: isDev ? devServer() : {},
   optimization: optimization(),
   module: {
@@ -170,16 +167,21 @@ module.exports = {
           },
           {
             loader: "css-loader",
-            // options: { sourceMap: isDev }
+            options: { sourceMap: isDev }
           },
           {
             loader: "postcss-loader",
             options: {
-              // sourceMap: isDev,
+              sourceMap: isDev,
               config: { path: `./postcss.config.js` }
             }
           },
-          "less-loader"
+          {
+            loader: "less-loader",
+            options: {
+              sourceMap: isDev
+            }
+          }
         ]
       }
     ]
@@ -194,7 +196,6 @@ module.exports = {
 
 /*TODO: 
 
-  check soursemaps,
   add pug in bundle
 
 */

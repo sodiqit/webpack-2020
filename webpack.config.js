@@ -4,6 +4,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const find = require(`./find`);
 
 const isDev = process.env.NODE_ENV === "development";
 const isProd = !isDev;
@@ -13,6 +14,9 @@ const PATHS = {
   src: path.join(__dirname, "./src"),
   dist: path.join(__dirname, "./public")
 };
+
+const PAGES_DIR = `${PATHS.src}/pages/`;
+const PAGES = find.files(PAGES_DIR, ".pug");
 
 const devServer = () => {
   return {
@@ -77,11 +81,14 @@ const plugins = () => {
       allChunks: true
     }),
 
-    new HtmlWebpackPlugin({
-      template: `${path.join(__dirname, './src/pug/pages/index.pug')}`,
-      filename: './index.html',
-      // chunks: [`${page.replace(/\.pug/,'')}`, `vendors`]
-    }),
+    ...PAGES.map(
+      page =>
+        new HtmlWebpackPlugin({
+          template: `${path.join(__dirname, `./src/pages/${page.replace(/\.pug/,'')}/${page}`)}`,
+          filename: `./${page === 'index.pug' ? '' : 'pages/'}${page.replace(/\.pug/,'.html')}`,
+          chunks: [`${page.replace(/\.pug/,'')}`, `vendors`]
+        })
+    ),
   ]
 
   return pluginConf;
@@ -90,9 +97,7 @@ const plugins = () => {
 
 
 module.exports = {
-  entry: {
-    index: './src/index.ts'
-  },
+  entry: find.entries(PAGES_DIR, '.ts'),
   output: {
     filename: `js/${fileName("js")}`,
     path: PATHS.dist

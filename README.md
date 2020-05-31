@@ -36,4 +36,5 @@ npm run build
 * `src/ts` - Ts scripts folder
 * `src/index.ts` - main app script
 * `src/fonts` - fonts folder
+* `src/pages/{folderName}` - folder page(with his styles and scripts)
 

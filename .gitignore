@@ -1,0 +1,17 @@
+# Файлы и папки операционной системы
+.DS_Store
+Thumbs.db
+
+# Файлы редактора
+.idea
+.vscode
+
+# Вспомогательные файлы
+*.log*
+node_modules/
+materials/
+
+# Папка с собранными файлами проекта и сринами для pixelperfect
+public/
+
+

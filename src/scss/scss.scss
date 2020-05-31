@@ -1,0 +1,22 @@
+h1 {
+    color: brown;
+    &:hover {
+        color: green;
+    }
+}
+@font-face {
+    font-family: 'BloggerSans';
+    src: url('./../fonts/bloggersans-medium.woff2');
+}
+
+@font-face {
+    font-family: 'BloggerSans Light';
+    src: url('./../fonts/bloggersans-light.woff2');
+}
+body {
+    font-family: 'BloggerSans Light';
+    font-size: 22px;
+    display: flex;
+    background-image: url('./../img/about-desktop@2x.png');
+    background-repeat: no-repeat;
+}
